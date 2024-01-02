@@ -1,42 +1,77 @@
-import * as React from 'react';
-import { Container, Button } from '@mui/material';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
+import React, { useState } from 'react';
+import { Container, Button, Typography, Card, CardContent, TextField } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 
 export default function Formulario() {
-  const card = (
-    <React.Fragment>
-      <CardContent>
-        <Typography sx={{ marginBottom: '12%' }} variant="h5" component="div">
-          Login de usuarios
-        </Typography>
-        <Container sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+  const [loginResponse, setLoginResponse] = useState(null);
+  const [formData, setFormData] = useState({
+    nombre: '',
+    email: '',
+    password: '',
+  });
 
-          <TextField id="nombre_login_usuarios" label="Nombre" variant="standard" sx={{ marginTop: '60px' }}/>
-          <TextField id="mail_login_usuarios" label="Mail" variant="standard" sx={{ marginTop: '25px' }}/>
-          <TextField id="password_login_usuarios" label="Contraseña" type="password" autoComplete="current-password" variant="standard" sx={{ marginTop: '25px' }} />
-          <Button id="button_login_usuarios" variant="contained" endIcon={<SendIcon />} sx={{ marginTop: '40px', width: '100px', marginLeft: '70%', backgroundColor: '#d406c7' }}>Enviar</Button>
-        </Container>
-      </CardContent>
-    </React.Fragment>
-  );
+  const handleInputChange = (event) => {
+    setFormData({
+      ...formData,
+      [event.target.id]: event.target.value,
+    });
+  };
+
+  const handleFormSubmit = async () => {
+    try {
+      //Url de api, cambiar por la de mugi
+      const response = await fetch('https://jsonplaceholder.typicode.com/users');
+      const users = await response.json();
+
+      const { nombre, email, password } = formData;
+      const usuarioEncontrado = users.find(
+        (usuario) =>
+          usuario.name === nombre &&
+          usuario.email === email &&
+          usuario.username === password 
+      );
+
+      //respuesta exitosa 200-299
+      if (usuarioEncontrado) {
+        setLoginResponse('¡Login exitoso!');
+        //respuesta erronea
+      } else {
+        setLoginResponse('Error en la autenticación. Por favor, verifica tus datos.');
+      }
+      //orto error
+    } catch (error) {
+      setLoginResponse('Ocurrió un error. Por favor, inténtalo de nuevo.');
+    }
+  };
 
   return (
-    <Container sx={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }} >
-      <Box sx={{ minWidth: '95%', animation: 'floating 3s ease-in-out infinite', '@keyframes floating': 
-      { '0%': { transform: 'translateY(0)' }, 
-      '50%': { transform: 'translateY(-10px)' }, 
-      '100%': { transform: 'translateY(0)' },},
-
-          boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',
-        }}
-      >
-        <Card variant="outlined">{card}</Card>
-      </Box>
+    <Container sx={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Card sx={{ minWidth: '95%', animation: 'floating 3s ease-in-out infinite', '@keyframes floating':
+        { '0%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+          '100%': { transform: 'translateY(0)' },
+        },
+        boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',
+      }}>
+        <Card variant="outlined">
+          <CardContent>
+            <Typography sx={{ marginBottom: '12%' }} variant="h5" component="div">
+              Login de usuarios
+            </Typography>
+            <Container sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+            <TextField id="nombre" label="Nombre" variant="standard" sx={{ marginTop: '60px' }} value={formData.nombre} onChange={handleInputChange}/>
+            <TextField id="email" label="Mail" variant="standard" sx={{ marginTop: '25px' }} value={formData.email} onChange={handleInputChange}/>
+            <TextField id="password" label="Contraseña" type="password" autoComplete="current-password" variant="standard" sx={{ marginTop: '25px' }} value={formData.password} onChange={handleInputChange}/>
+             </Container>
+          </CardContent>
+        </Card>
+        {loginResponse && (
+          <Typography sx={{ marginTop: '20px' }} variant="body1" color={loginResponse.startsWith('¡Login exitoso') ? 'success' : 'error'}>
+            {loginResponse}
+          </Typography>
+        )}
+        <Button id="button_login_usuarios" variant="contained" endIcon={<SendIcon />} sx={{ marginTop: '40px', width: '100px', marginLeft: '70%', marginBottom: '15px', backgroundColor: '#d406c7' }} onClick={handleFormSubmit}>Enviar</Button>
+      </Card>
     </Container>
   );
 }
