@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Container, Button, Typography, Card, CardContent, TextField } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
+import NavBar from './NavBar';
+import LoginFormView from '../utils/formView';
 
 export default function Formulario() {
+
   const [loginResponse, setLoginResponse] = useState(null);
   const [formData, setFormData] = useState({
     nombre: '',
     email: '',
     password: '',
   });
+  const [error, setError] = useState(null);
 
   const handleInputChange = (event) => {
     setFormData({
@@ -19,6 +21,11 @@ export default function Formulario() {
 
   const handleFormSubmit = async () => {
     try {
+      //manejo de datos vacíos
+      if (formData.nombre === '' || formData.email === '' || formData.password === '') {
+        setError('Por favor, complete todos los campos.');
+        return;
+      }
       //Url de api, cambiar por la de mugi
       const response = await fetch('https://jsonplaceholder.typicode.com/users');
       const users = await response.json();
@@ -38,40 +45,45 @@ export default function Formulario() {
       } else {
         setLoginResponse('Error en la autenticación. Por favor, verifica tus datos.');
       }
+      setError(null);
       //orto error
     } catch (error) {
-      setLoginResponse('Ocurrió un error. Por favor, inténtalo de nuevo.');
+      if (error.message === 'Network Error') {
+        setError('Error de red. Por favor, verifica tu conexión.');
+      } else {
+        setError('Ocurrió un error inesperado. Por favor, inténtalo de nuevo.');
+      }
     }
   };
 
+
+// REESTABLECIMIENTO DE CONTRASEÑA
+  const handleResetPassword = () => {
+
+    setLoginResponse('Solicitud de restablecimiento de contraseña enviada.');
+  }
+
+
+//view navbar y formview
   return (
-    <Container sx={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <Card sx={{ minWidth: '95%', animation: 'floating 3s ease-in-out infinite', '@keyframes floating':
-        { '0%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
-          '100%': { transform: 'translateY(0)' },
-        },
-        boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px',
-      }}>
-        <Card variant="outlined">
-          <CardContent>
-            <Typography sx={{ marginBottom: '12%' }} variant="h5" component="div">
-              Login de usuarios
-            </Typography>
-            <Container sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-            <TextField id="nombre" label="Nombre" variant="standard" sx={{ marginTop: '60px' }} value={formData.nombre} onChange={handleInputChange}/>
-            <TextField id="email" label="Mail" variant="standard" sx={{ marginTop: '25px' }} value={formData.email} onChange={handleInputChange}/>
-            <TextField id="password" label="Contraseña" type="password" autoComplete="current-password" variant="standard" sx={{ marginTop: '25px' }} value={formData.password} onChange={handleInputChange}/>
-             </Container>
-          </CardContent>
-        </Card>
-        {loginResponse && (
-          <Typography sx={{ marginTop: '20px' }} variant="body1" color={loginResponse.startsWith('¡Login exitoso') ? 'success' : 'error'}>
-            {loginResponse}
-          </Typography>
-        )}
-        <Button id="button_login_usuarios" variant="contained" endIcon={<SendIcon />} sx={{ marginTop: '40px', width: '100px', marginLeft: '70%', marginBottom: '15px', backgroundColor: '#d406c7' }} onClick={handleFormSubmit}>Enviar</Button>
-      </Card>
-    </Container>
+    <div>
+      <NavBar />
+      <LoginFormView
+        loginResponse={loginResponse}
+        formData={formData}
+        error={error}
+        handleInputChange={handleInputChange}
+        handleFormSubmit={handleFormSubmit}
+        handleResetPassword={handleResetPassword}
+      />
+    </div>
   );
 }
+
+
+
+
+
+
+
+
