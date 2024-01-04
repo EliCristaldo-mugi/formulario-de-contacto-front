@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import NavBar from './NavBar';
-import LoginFormView from '../utils/formView';
+import LoginFormView from '../view/formLoginView';
+import { LoginFormulario } from '../utils/loginUtils';
+import { RestablecimientoPassword } from '../utils/passwordUtils';
 
 export default function Formulario() {
-
-  const [loginResponse, setLoginResponse] = useState(null);
+  const [loginResponse, respuesta] = useState(null);
   const [formData, setFormData] = useState({
     nombre: '',
     email: '',
@@ -19,52 +20,6 @@ export default function Formulario() {
     });
   };
 
-  const handleFormSubmit = async () => {
-    try {
-      //manejo de datos vacíos
-      if (formData.nombre === '' || formData.email === '' || formData.password === '') {
-        setError('Por favor, complete todos los campos.');
-        return;
-      }
-      //Url de api, cambiar por la de mugi
-      const response = await fetch('https://jsonplaceholder.typicode.com/users');
-      const users = await response.json();
-
-      const { nombre, email, password } = formData;
-      const usuarioEncontrado = users.find(
-        (usuario) =>
-          usuario.name === nombre &&
-          usuario.email === email &&
-          usuario.username === password 
-      );
-
-      //respuesta exitosa 200-299
-      if (usuarioEncontrado) {
-        setLoginResponse('¡Login exitoso!');
-        //respuesta erronea
-      } else {
-        setLoginResponse('Error en la autenticación. Por favor, verifica tus datos.');
-      }
-      setError(null);
-      //orto error
-    } catch (error) {
-      if (error.message === 'Network Error') {
-        setError('Error de red. Por favor, verifica tu conexión.');
-      } else {
-        setError('Ocurrió un error inesperado. Por favor, inténtalo de nuevo.');
-      }
-    }
-  };
-
-
-// REESTABLECIMIENTO DE CONTRASEÑA
-  const handleResetPassword = () => {
-
-    setLoginResponse('Solicitud de restablecimiento de contraseña enviada.');
-  }
-
-
-//view navbar y formview
   return (
     <div>
       <NavBar />
@@ -73,16 +28,17 @@ export default function Formulario() {
         formData={formData}
         error={error}
         handleInputChange={handleInputChange}
-        handleFormSubmit={handleFormSubmit}
-        handleResetPassword={handleResetPassword}
+        FormEnvio={async () => {
+          await LoginFormulario(formData, respuesta, setError);
+        }}
+        handleResetPassword={async () => {
+          await RestablecimientoPassword(formData, respuesta, setError);
+        }}
+        title="Login de usuarios"
       />
     </div>
   );
 }
-
-
-
-
 
 
 

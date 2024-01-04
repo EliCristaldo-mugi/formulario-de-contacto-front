@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Button, Typography, Card, CardContent, TextField } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 
-export default function LoginFormView({ loginResponse, formData, error, handleInputChange, handleFormSubmit, handleResetPassword }) {
+export default function LoginFormView({ loginResponse, formData, error, handleInputChange, FormEnvio, handleResetPassword, title }) {
   return (
     <Container sx={{ height: '92vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <Card sx={{ minWidth: '95%', animation: 'floating 3s ease-in-out infinite', '@keyframes floating':
@@ -15,7 +15,7 @@ export default function LoginFormView({ loginResponse, formData, error, handleIn
         <Card variant="outlined">
           <CardContent>
             <Typography sx={{ marginBottom: '12%' }} variant="h5" component="div">
-              Login de usuarios
+            {title}
             </Typography>
             <Container sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <TextField id="nombre" label="Nombre" variant="standard" sx={{ marginTop: '60px' }} value={formData.nombre} onChange={handleInputChange}/>
@@ -35,7 +35,7 @@ export default function LoginFormView({ loginResponse, formData, error, handleIn
           </Typography>
         )}
         <Button id="button_reestablecer_usuarios" variant="contained" sx={{ marginTop: '40px', width: '120px', alignSelf: 'center', marginLeft: '10px', marginBottom: '15px', backgroundColor: '#905fff' }} onClick={handleResetPassword}>Restablecer</Button>
-        <Button id="button_login_usuarios" variant="contained" endIcon={<SendIcon />} sx={{ marginTop: '40px', width: '100px', marginLeft: '5%', marginBottom: '15px', backgroundColor: '#d406c7' }} onClick={handleFormSubmit}>Enviar</Button>
+        <Button id="button_login_usuarios" variant="contained" endIcon={<SendIcon />} sx={{ marginTop: '40px', width: '100px', marginLeft: '5%', marginBottom: '15px', backgroundColor: '#d406c7' }} onClick={FormEnvio}>Enviar</Button>
       </Card>
     </Container>
   );
