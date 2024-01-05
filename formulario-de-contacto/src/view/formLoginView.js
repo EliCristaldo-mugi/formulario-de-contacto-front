@@ -1,10 +1,11 @@
 import React from 'react';
 import { Container, Button, Typography, Card, CardContent, TextField } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
+import FormHelperText from '@mui/material/FormHelperText';
 
-export default function LoginFormView({ loginResponse, formData, error, handleInputChange, FormEnvio, handleResetPassword, title }) {
+export default function LoginFormView({ loginResponse, formData, error, inputChange, FormEnvio, handleResetPassword, title }) {
   return (
     <Container sx={{ height: '92vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      {/* card flotante y con sombra */}
       <Card sx={{ minWidth: '95%', animation: 'floating 3s ease-in-out infinite', '@keyframes floating':
         { '0%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
@@ -17,11 +18,13 @@ export default function LoginFormView({ loginResponse, formData, error, handleIn
             <Typography sx={{ marginBottom: '12%' }} variant="h5" component="div">
             {title}
             </Typography>
+
             <Container sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <TextField id="nombre" label="Nombre" variant="standard" sx={{ marginTop: '60px' }} value={formData.nombre} onChange={handleInputChange}/>
-              <TextField id="email" label="Mail" variant="standard" sx={{ marginTop: '25px' }} value={formData.email} onChange={handleInputChange}/>
-              <TextField id="password" label="Contraseña" type="password" autoComplete="current-password" variant="standard" sx={{ marginTop: '25px' }} value={formData.password} onChange={handleInputChange}/>
+              <TextField id="usuarioOCorreo" label="Usuario o Correo Electrónico" variant="standard" sx={{ marginTop: '60px' }} value={formData.usuarioOCorreo} onChange={inputChange}/>
+              <TextField id="password" label="Contraseña" type="password" autoComplete="current-password" variant="standard" sx={{ marginTop: '25px' }} value={formData.password} onChange={inputChange}/>
+              <FormHelperText id="button_reestablecer_usuarios" onClick={handleResetPassword} sx={{ color: '#905fff' }} >Restablecer Contraseña</FormHelperText>
             </Container>
+            
           </CardContent>
         </Card>
         {error && (
@@ -34,8 +37,7 @@ export default function LoginFormView({ loginResponse, formData, error, handleIn
             {loginResponse}
           </Typography>
         )}
-        <Button id="button_reestablecer_usuarios" variant="contained" sx={{ marginTop: '40px', width: '120px', alignSelf: 'center', marginLeft: '10px', marginBottom: '15px', backgroundColor: '#905fff' }} onClick={handleResetPassword}>Restablecer</Button>
-        <Button id="button_login_usuarios" variant="contained" endIcon={<SendIcon />} sx={{ marginTop: '40px', width: '100px', marginLeft: '5%', marginBottom: '15px', backgroundColor: '#d406c7' }} onClick={FormEnvio}>Enviar</Button>
+        <Button id="button_login_usuarios" variant="contained" sx={{ marginTop: '40px', width: '120px', marginLeft: '5%', marginBottom: '15px', backgroundColor: '#d406c7' }} onClick={FormEnvio}>Login</Button>
       </Card>
     </Container>
   );

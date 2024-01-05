@@ -1,34 +1,40 @@
 import React, { useState } from 'react';
 import NavBar from './NavBar';
-import NewUserFormView from '../view/formNewUserView'; // Asumiendo la ruta y nombre del archivo adecuados
-import { RegistroNewUser } from '../utils/registroNewUserUtils'; 
-
+import NewUserFormView from '../view/formNewUserView';
+import { RegistroNewUser } from '../utils/registroNewUserUtils';
+import { actualizaInput, validacionPassword, validacionForm } from '../utils/reutils';
 
 export default function LoginNewUser() {
+  //almacenar la respuesta del registro
   const [registrationResponse, setRegistrationResponse] = useState(null);
+  //almacenar datos del form
+  //useState devuelve estado actual y estado actualizado
   const [formData, setFormData] = useState({
-    nombre: '',
+    fullName: '',
+    userName: '',
     email: '',
     password: '',
-    confirmaPassword: '',
+    confirmPassword: '',
   });
   const [error, setError] = useState(null);
 
-  const handleInputChange = (event) => {
-    setFormData({
-      ...formData,
-      [event.target.id]: event.target.value,
-    });
-  };
+  //actualiza los datos del formulario cuando los campos cambian
+  const inputChange = actualizaInput(formData, setFormData);
+  
+  //validar el formulario y las contraseñas cuando se dispara el evento 'handleSubmit'
+  const mensajeError = async () => {
+    setError(null);
+    const FormValid = validacionForm(formData, setError);
+    const PasswordValid = validacionPassword(formData, setError);
 
-  const handleSubmit = async () => {
-    // Verifica si las contraseñas coinciden antes de enviar la solicitud
-    if (formData.password !== formData.confirmaPassword) {
-      setError('Las contraseñas no coinciden');
-      return;
+    if (!FormValid || !PasswordValid) return;
+
+    try {
+      //función para registrar un nuevo usuario
+      await RegistroNewUser(formData, setRegistrationResponse, setError);
+    } catch (error) {
+      setError('Ocurrió un error al registrar el usuario. Por favor, inténtalo de nuevo.');
     }
-
-    await RegistroNewUser(formData, setRegistrationResponse, setError);
   };
 
   return (
@@ -38,8 +44,8 @@ export default function LoginNewUser() {
         registrationResponse={registrationResponse}
         formData={formData}
         error={error}
-        handleInputChange={handleInputChange}
-        handleSubmit={handleSubmit}
+        inputChange={inputChange}
+        handleSubmit={mensajeError}
         title="Registro de nuevos usuarios"
       />
     </div>

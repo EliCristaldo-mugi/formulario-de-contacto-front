@@ -3,22 +3,21 @@ import NavBar from './NavBar';
 import LoginFormView from '../view/formLoginView';
 import { LoginFormulario } from '../utils/loginUtils';
 import { RestablecimientoPassword } from '../utils/passwordUtils';
+import { actualizaInput } from '../utils/reutils';
 
 export default function Formulario() {
+  //useState: devuelve dos arrays, uno con info actual y otra actualizada
+  //responde a cambios en los datos
   const [loginResponse, respuesta] = useState(null);
   const [formData, setFormData] = useState({
-    nombre: '',
-    email: '',
+    //datos que luego se llenan al completar el form
+    usuarioOCorreo: '',
     password: '',
   });
   const [error, setError] = useState(null);
 
-  const handleInputChange = (event) => {
-    setFormData({
-      ...formData,
-      [event.target.id]: event.target.value,
-    });
-  };
+  //actualización del correo y contraseña
+  const inputChange = actualizaInput(formData, setFormData);
 
   return (
     <div>
@@ -27,7 +26,7 @@ export default function Formulario() {
         loginResponse={loginResponse}
         formData={formData}
         error={error}
-        handleInputChange={handleInputChange}
+        inputChange={inputChange}
         FormEnvio={async () => {
           await LoginFormulario(formData, respuesta, setError);
         }}
@@ -39,7 +38,6 @@ export default function Formulario() {
     </div>
   );
 }
-
 
 
 

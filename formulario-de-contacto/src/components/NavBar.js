@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import logoImage from '../assets/SOMOSMUGI.png';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -10,7 +11,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button'; 
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 
 const pages = [
   { label: 'Login', path: '/' },
@@ -31,25 +31,45 @@ export default function NavBar() {
   return (
     <AppBar position="static" sx={{ backgroundColor: '#d406c7', height: '8vh' }}>
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component={Link}
-            to="/"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            MUGI
-          </Typography>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '-5.2vh' }}>
+            <img
+              src={logoImage}
+              alt="Logo"
+              style={{ display: { xs: 'flex', md: 'none' }, marginRight: 1, marginLeft: '-1vh', maxHeight: '20vh' }} 
+            />
+            <Typography
+              variant="h6"
+              noWrap
+              component={Link}
+              to="/"
+              sx={{
+                mr: 2,
+                display: { xs: 'none', md: 'flex' },
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                letterSpacing: '.3rem',
+                color: 'inherit',
+                textDecoration: 'none',
+              }}
+            >
+            </Typography>
+          </Box>
+  
+          <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '-5vh' }}>
+            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+              {pages.map((page) => (
+                <Button
+                  key={page.path}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                  component={Link}
+                  to={page.path}
+                  onClick={handleCloseNavMenu}
+                >
+                  {page.label}
+                </Button>
+              ))}
+            </Box>
   
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
               <IconButton
@@ -59,6 +79,7 @@ export default function NavBar() {
                 aria-haspopup="true"
                 onClick={handleOpenNavMenu}
                 color="inherit"
+                sx={{ marginLeft: 'auto' }}
               >
                 <MenuIcon />
               </IconButton>
@@ -98,42 +119,9 @@ export default function NavBar() {
                 ))}
               </Menu>
             </Box>
-            <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-            <Typography
-              variant="h5"
-              noWrap
-              component="a"
-              href="#app-bar-with-responsive-menu"
-              sx={{
-                mr: 2,
-                display: { xs: 'flex', md: 'none' },
-                flexGrow: 1,
-                fontFamily: 'monospace',
-                fontWeight: 700,
-                letterSpacing: '.3rem',
-                color: 'inherit',
-                textDecoration: 'none',
-              }}
-            >
-              MUGI
-            </Typography>
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page.path}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-                component={Link}
-                to={page.path}
-                onClick={handleCloseNavMenu}
-              >
-                {page.label}
-              </Button>
-            ))}
           </Box>
         </Toolbar>
       </Container>
     </AppBar>
   );
 }
-
-

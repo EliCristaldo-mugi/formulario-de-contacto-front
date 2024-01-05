@@ -4,6 +4,7 @@ import Formulario from './components/Formulario';
 import LoginNewUser from './components/LoginNuwUser';
 
 const App = () => {
+
   return (
     <Router>
       <div>
