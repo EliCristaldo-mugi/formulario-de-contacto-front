@@ -1,9 +1,13 @@
-import { Container, Card, Button, FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material";
+import { Container, Card, Button, FormControl, InputLabel, Select, MenuItem, Box, ToggleButton, Popover } from "@mui/material";
+import FormatColorFillIcon from '@mui/icons-material/FormatColorFill';
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import NavBar from "./NavBar";
 import TextField from '@material-ui/core/TextField';
 import React, { useState, useEffect } from 'react';
+import { ChromePicker } from 'react-color';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+
 
 const mock = new MockAdapter(axios);
 
@@ -22,7 +26,7 @@ mock.onPost('/api/save').reply(200, {
 });
 
 export default function CustomText() {
-  //estados iniciales
+  //estados iniciales modificables
   //state: estado actual.        setState: actualizar el estado
   const [text, setText] = useState('');
   const [size, setSize] = useState(12);
@@ -31,12 +35,16 @@ export default function CustomText() {
   const [color, setColor] = useState('black');
   const [editar, setEditar] = useState(false);
   const [administrador, setAdministrador] = useState(false);
+  const [elementoPicker, setElementoPicker] = useState(null);
+  const [selectedColor, setSelectedColor] = useState('#000000');
   
 
+  // inicializar los estados del componente
   useEffect(() => {
-    // Llamada a la API para obtener los datos iniciales
+    // llamada a la API para obtener los datos iniciales
     axios.get('api/useEffect')
       .then(response => {
+        //se guarda adentro el "data" componentes que se modifican
         const data = response.data;
         setText(data.body || 'Texto');
         setSize(data.size !== undefined ? data.size : 12);
@@ -51,12 +59,15 @@ export default function CustomText() {
   }, []);
        
 
-
+//guardar los datos editados
   const save = async () => {
     try {
+      // llamada a la API para postear los datos
       await axios.post('/api/save', { text, size, align, family, color });
       alert('Datos guardados con éxito');
+      //terminar con el modo editar y ver el texto
       setEditar(false);
+      //manejo de errores
     } catch (error) {
       if (error.response) {
         alert('Error al guardar datos: ', error.response.data );
@@ -70,6 +81,30 @@ export default function CustomText() {
     }
   };
 
+ 
+//abrir el color picker
+  const abrirElementPicker = (event) => {
+    setElementoPicker(event.currentTarget);
+  };
+
+  //cerrar el color picker
+  const handlePopoverClose = () => {
+    setElementoPicker(null);
+  };
+
+  //aplicar el color seleccionado al texto
+  const colorButton = () => {
+  setColor(selectedColor);
+};
+
+//actualiza el estado del color
+  const colorChange = (color) => {
+    setSelectedColor(color.hex);
+  };
+
+//ver si tiene un valor distinto de null
+  const open = Boolean(elementoPicker);
+
 
 
   return (
@@ -80,6 +115,9 @@ export default function CustomText() {
           <Container sx={{ height: '92vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Card sx={{ padding: '2%', minWidth: '95%', boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px' }}>
               <div>
+
+                {/* contenido de texto editable */}
+
                 <TextField
                   fullWidth
                   style={{ margin: '20px', width: '92%' }}
@@ -90,11 +128,13 @@ export default function CustomText() {
                   onChange={e => setText(e.target.value)}
                 />
 
+                {/* Font Family */}
+
                 <TextField
                   sx={{ width: 300 }}
                   style={{ margin: '20px' }}
                   id="outlined-number"
-                  label="Tamaño"
+                  label="Tipo"
                   type="text"
                   value={family}
                   onChange={e => setFamily(e.target.value)}
@@ -102,6 +142,8 @@ export default function CustomText() {
                     shrink: true,
                   }}
                 />
+
+                {/* Tamaño */}
 
                 <TextField
                   sx={{ width: 300 }}
@@ -116,18 +158,36 @@ export default function CustomText() {
                   }}
                 />
 
-                <TextField
-                  sx={{ width: 300 }}
-                  style={{ margin: '20px' }}
-                  id="outlined-number"
-                  label="Color"
-                  type="text"
-                  value={color}
-                  onChange={e => setColor(e.target.value)}
-                  InputLabelProps={{
-                    shrink: true,
+              {/* Color Picker */}
+                <ToggleButton
+                  value={selectedColor}
+                  aria-label="color"
+                  onMouseDown={abrirElementPicker}
+                  disabled={false}
+                  onMouseUp={colorButton}
+                >
+                  <FormatColorFillIcon />
+                  <ArrowDropDownIcon />
+                </ToggleButton>
+
+                <Popover
+                  open={open}
+                  anchorEl={elementoPicker}
+                  onClose={handlePopoverClose}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
                   }}
-                />
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                >
+                  <ChromePicker color={selectedColor} onChange={colorChange} />
+                </Popover>
+
+
+                {/* Alineación del texto */}
 
                 <FormControl sx={{ width: 300 }} style={{ margin: '20px' }}>
                   <InputLabel id="demo-simple-select-label">Alineación</InputLabel>
@@ -151,7 +211,7 @@ export default function CustomText() {
           <div>
           <Container sx={{ height: '92vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
             <Box style={{ width: '90%', padding: '2%', boxShadow: 'rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px', backgroundColor: `white`, textAlign: 'center' }}>
-              <p style={{ fontSize: `${size}px`, fontFamily: `${family}`, textAlign: `${align}`, color: `${color}` }}>{text}</p>
+              <p style={{ fontSize: `${size}px`, fontFamily: `${family}`, textAlign: `${align}`, color: `${selectedColor}` }}>{text}</p>
             </Box>
               <Button style={{ marginTop: '20px', color: 'white', border: 'solid 1.5px white' }} variant="outlined" onClick={() => setEditar(true)}>Editar</Button>
             </Container>
